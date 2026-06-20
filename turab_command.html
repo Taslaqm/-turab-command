@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turab Partners / Command</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#13151a;--paper:#f6f1e7;--clay:#b4552f;--clay-soft:#cf7a52;
+  --teal:#1f5e5b;--teal-soft:#2f817d;--gold:#c69a3e;--muted:#6b6357;
+  --line:#d8d0be;--surface:#ffffff;--surface2:#f0ebe0;
+  --info-bg:#e8f0fb;--info-txt:#1a4a8a;
+  --warn-bg:#fef3dc;--warn-txt:#7a4f0a;
+  --success-bg:#e4f4ed;--success-txt:#1a5c3a;
+  --danger-bg:#fdecea;--danger-txt:#8a1c1c;
+  --secondary-bg:#f0ebe0;--secondary-txt:#5a5346;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --ink:#e8e0d0;--paper:#1a1714;--muted:#9a9080;--line:#2e2a24;
+    --surface:#242018;--surface2:#1e1b16;--gold:#d4aa4e;--clay:#d4724a;
+    --teal-soft:#3a9490;--info-bg:#0d2240;--info-txt:#7db3f5;
+    --warn-bg:#2a1f08;--warn-txt:#d4a050;--success-bg:#0a2018;
+    --success-txt:#5abf8a;--danger-bg:#2a0e0e;--danger-txt:#f07070;
+    --secondary-bg:#2a2520;--secondary-txt:#a09080;
+  }
+}
+html{font-size:16px;}
+body{background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;}
+
+/* LAYOUT */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+@media(max-width:700px){.app{grid-template-columns:1fr;}.sidebar{display:none;}.mobile-nav{display:flex!important;}}
+
+/* SIDEBAR */
+.sidebar{background:var(--surface);border-right:1px solid var(--line);padding:0;display:flex;flex-direction:column;}
+.sidebar-brand{padding:22px 20px 16px;border-bottom:1px solid var(--line);}
+.sidebar-brand .wordmark{font-family:'Fraunces',serif;font-size:18px;font-weight:600;color:var(--ink);}
+.sidebar-brand .sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.sidebar-nav{padding:12px 10px;flex:1;}
+.nav-section{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:4px 10px;margin-bottom:4px;margin-top:12px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:var(--surface2);color:var(--ink);}
+.nav-item.active{background:var(--surface2);color:var(--ink);font-weight:500;}
+.nav-item .icon{font-size:15px;opacity:.7;}
+.nav-ch{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;font-size:12.5px;color:var(--muted);cursor:pointer;transition:background .15s,color .15s;border:none;background:none;width:100%;text-align:left;}
+.nav-ch:hover{background:var(--surface2);color:var(--ink);}
+.nav-ch.active{background:var(--clay);color:#fff;}
+.nav-ch .ch-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.nav-ch .ch-badge-count{margin-left:auto;background:rgba(0,0,0,.12);font-size:10px;padding:1px 6px;border-radius:10px;}
+.sidebar-footer{padding:14px 20px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);}
+
+/* MOBILE NAV */
+.mobile-nav{display:none;background:var(--surface);border-bottom:1px solid var(--line);padding:12px 16px;gap:4px;overflow-x:auto;}
+.mob-btn{background:none;border:1px solid var(--line);border-radius:20px;padding:5px 14px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.mob-btn.active{background:var(--clay);border-color:var(--clay);color:#fff;}
+
+/* MAIN */
+.main{display:flex;flex-direction:column;min-height:100vh;}
+.topbar{padding:18px 28px 16px;border-bottom:1px solid var(--line);background:var(--surface);}
+.topbar-title{font-family:'Fraunces',serif;font-size:22px;font-weight:600;}
+.topbar-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+.content{padding:24px 28px;flex:1;}
+@media(max-width:700px){.content{padding:16px;}.topbar{padding:14px 16px;}}
+
+/* STATS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;}
+.stat-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;}
+.stat-label{font-size:11px;color:var(--muted);margin-bottom:6px;}
+.stat-value{font-size:26px;font-weight:600;color:var(--ink);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* CHANNEL CARDS (overview) */
+.ch-overview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px;}
+.ch-ov-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
+.ch-ov-card:hover{border-color:var(--clay);box-shadow:0 2px 12px rgba(180,85,47,.1);}
+.ch-ov-num{font-size:10px;color:var(--muted);margin-bottom:4px;letter-spacing:.05em;}
+.ch-ov-name{font-size:13px;font-weight:500;color:var(--ink);line-height:1.3;margin-bottom:6px;}
+.ch-ov-count{font-size:11px;color:var(--muted);}
+.ch-ov-bar{height:3px;border-radius:2px;background:var(--line);margin-top:10px;overflow:hidden;}
+.ch-ov-fill{height:100%;border-radius:2px;background:var(--clay);}
+
+/* CHANNEL DETAIL */
+.ch-detail-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.ch-detail-title{font-family:'Fraunces',serif;font-size:22px;font-weight:600;}
+.ch-detail-meta{font-size:13px;color:var(--muted);margin-top:3px;}
+.badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
+.badge-wedge{background:var(--warn-bg);color:var(--warn-txt);}
+.badge-core{background:var(--danger-bg);color:var(--danger-txt);}
+.badge-annuity{background:var(--success-bg);color:var(--success-txt);}
+.badge-channel{background:var(--info-bg);color:var(--info-txt);}
+.badge-referral{background:var(--secondary-bg);color:var(--secondary-txt);}
+
+/* PLAN */
+.plan-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px;}
+.plan-card-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.plan-field{margin-bottom:16px;}
+.plan-field:last-child{margin-bottom:0;}
+.plan-field-label{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;font-weight:500;}
+.plan-field-val{font-size:13.5px;color:var(--muted);line-height:1.65;}
+.plan-field-val.filled{color:var(--ink);}
+.edit-btn{display:inline-flex;align-items:center;gap:4px;background:none;border:1px solid var(--line);border-radius:6px;padding:3px 9px;font-size:11.5px;color:var(--muted);cursor:pointer;margin-top:6px;transition:background .15s;}
+.edit-btn:hover{background:var(--surface2);}
+.plan-textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;font-family:'Inter',sans-serif;color:var(--ink);background:var(--surface);resize:vertical;min-height:72px;line-height:1.55;margin-top:6px;}
+.plan-textarea:focus{outline:none;border-color:var(--clay);}
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+.btn-sm{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;color:var(--ink);transition:background .15s;}
+.btn-sm:hover{background:var(--surface2);}
+.btn-sm.primary{border-color:var(--clay);color:var(--clay);}
+
+/* JOURNAL */
+.journal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.journal-title-text{font-size:15px;font-weight:500;}
+.btn-new{display:inline-flex;align-items:center;gap:6px;background:var(--clay);border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:500;color:#fff;cursor:pointer;transition:opacity .15s;}
+.btn-new:hover{opacity:.88;}
+
+.compose{background:var(--surface);border:1px solid var(--clay);border-radius:12px;padding:16px;margin-bottom:14px;}
+.type-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.type-pill{background:var(--surface2);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s;border:none;}
+.type-pill.active{background:var(--clay);color:#fff;}
+.compose-ta{width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px;font-family:'Inter',sans-serif;color:var(--ink);background:var(--surface);resize:vertical;min-height:90px;line-height:1.6;}
+.compose-ta:focus{outline:none;border-color:var(--clay);}
+.compose-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:8px;}
+.compose-char{font-size:11px;color:var(--muted);}
+.btn-log{background:var(--clay);border:none;border-radius:8px;padding:7px 18px;font-size:13px;font-weight:500;color:#fff;cursor:pointer;}
+.btn-log:hover{opacity:.88;}
+.btn-cancel{background:none;border:1px solid var(--line);border-radius:8px;padding:7px 14px;font-size:12px;color:var(--muted);cursor:pointer;}
+
+.entry-list{display:flex;flex-direction:column;gap:10px;}
+.entry-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+.entry-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+.entry-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.type-tag{font-size:11px;padding:2px 9px;border-radius:20px;font-weight:500;}
+.tag-journal{background:var(--info-bg);color:var(--info-txt);}
+.tag-memo{background:var(--warn-bg);color:var(--warn-txt);}
+.tag-lead{background:var(--success-bg);color:var(--success-txt);}
+.tag-blocker{background:var(--danger-bg);color:var(--danger-txt);}
+.entry-date{font-size:11px;color:var(--muted);}
+.entry-ch-label{font-size:11px;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:10px;}
+.del-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:2px 6px;border-radius:4px;font-size:14px;}
+.del-btn:hover{color:var(--danger-txt);background:var(--danger-bg);}
+.entry-body{font-size:13.5px;color:var(--ink);line-height:1.65;white-space:pre-wrap;}
+
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty svg{opacity:.3;margin-bottom:12px;}
+.empty p{font-size:13px;}
+
+.section-head{font-size:13px;font-weight:500;color:var(--muted);margin-bottom:12px;}
+.recent-feed{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+.feed-item{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--line);}
+.feed-item:last-child{border-bottom:none;}
+.feed-ch{font-size:11px;color:var(--muted);min-width:100px;line-height:1.4;padding-top:1px;}
+.feed-body{font-size:13px;color:var(--ink);flex:1;line-height:1.5;}
+.feed-date{font-size:11px;color:var(--muted);white-space:nowrap;}
+
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.filter-btn{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--muted);cursor:pointer;}
+.filter-btn.active{background:var(--clay);border-color:var(--clay);color:#fff;}
+
+.divider{border:none;border-top:1px solid var(--line);margin:18px 0;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="wordmark">Turab Partners</div>
+      <div class="sub">Command · Internal</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Workspace</div>
+      <button class="nav-item active" id="nav-overview" onclick="showView('overview')">
+        <span class="icon">⌂</span> Overview
+      </button>
+      <button class="nav-item" id="nav-alljournal" onclick="showView('alljournal')">
+        <span class="icon">≡</span> All entries
+      </button>
+      <div class="nav-section" style="margin-top:16px">Channels</div>
+      <div id="sidebar-channels"></div>
+    </nav>
+    <div class="sidebar-footer">Muhannad Taslaq · Tamer Salah</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="mobile-nav" id="mobile-nav"></div>
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Overview</div>
+      <div class="topbar-sub" id="topbar-sub">Your channel command centre</div>
+    </div>
+    <div class="content" id="main-content"></div>
+  </main>
+</div>
+
+<script>
+const CHANNELS=[
+  {id:'diagnostic',num:'01',badge:'wedge',badgeLabel:'The Wedge',color:'#c69a3e',name:'Ecosystem Diagnostic',price:'$25K–50K',duration:'4–6 weeks',
+   role:'The door-opener. A fast read on where a country or institution sits on the venture-maturity curve. Low-risk yes for the buyer — and it scopes the real mandate.',
+   goal:'Land 2 paid diagnostics inside 6 months — one in Jordan, one in Iraq or Syria.',
+   targets:'Ministries of economy/innovation, university leadership, donor-funded programs in Jordan and Iraq.',
+   actions:'Draft a one-page diagnostic brief. Reach out through Tamer\'s Endeavor network and referral layer. Price at $30K to reduce friction on first engagement.'},
+  {id:'readiness',num:'02',badge:'core',badgeLabel:'Core Mandate',color:'#cf7a52',name:'Investment Readiness Program',price:'$75K–150K',duration:'3–6 months',
+   role:'The workhorse. Templated cohort program: curriculum, mentors, demo day, investor connections. Repeatable across geographies once built.',
+   goal:'Template the program by month 3. Target first delivery in Jordan (HTU or PSUT pipeline) before selling abroad.',
+   targets:'Universities, national innovation authorities, donor-funded accelerator programs (GIZ, EU, USAID-adjacent).',
+   actions:'Build the curriculum skeleton from HTU advisory work. Create a donor-ready proposal template with measurable outputs.'},
+  {id:'build',num:'03',badge:'core',badgeLabel:'Flagship',color:'#b4552f',name:'Ecosystem & Engine Build',price:'$150K–300K+',duration:'6–18 months',
+   role:'The flagship. Design and stand up the actual institution — fund structure, governance, deal-flow engine, investor network. Our least replicable work.',
+   goal:'One flagship build mandate in pipeline by month 6. Target Central Asia or Iraq as the first non-Jordan win.',
+   targets:'Governments, sovereign innovation funds, development banks (IFC, EBRD-adjacent), large university systems.',
+   actions:'Build the case study from PSUT. Write a flagship build proposal template. Identify 2 warm referrers in Kazakhstan and Uzbekistan.'},
+  {id:'retainer',num:'04',badge:'annuity',badgeLabel:'Annuity',color:'#2f817d',name:'Advisory Retainer',price:'$5K–15K/mo',duration:'Rolling',
+   role:'The annuity. Convert every finished engagement into ongoing senior advisory. Smooths lumpy project cash into recurring revenue.',
+   goal:'Two retainers running by month 6 — converted from diagnostics or existing HTU/PSUT relationships.',
+   targets:'Buyers from Offerings 01–03. Also pitch to regional funds looking for a scout/advisor-on-retainer.',
+   actions:'Add retainer as default next-step in every proposal and closing conversation. Price at $6K/mo to start.'},
+  {id:'grind',num:'05',badge:'channel',badgeLabel:'Channel',color:'#1f5e5b',name:'Startup Grind Amman',price:'Relationship engine',duration:'Ongoing',
+   role:'Not a revenue line — the top-of-funnel. Where we meet the sponsors, institutions, and founders who convert into Offerings 01–04.',
+   goal:'Run monthly events. Host 2 institutional sponsors per quarter who are also target advisory buyers.',
+   targets:'Same institutions that buy advisory work. Cultivate in the Grind, convert through Turab Partners.',
+   actions:'Secure 2 institutional sponsors for Q3. Use every event to book one follow-up advisory conversation.'},
+  {id:'referral',num:'—',badge:'referral',badgeLabel:'Referral Layer',color:'#7a6f59',name:'Referral Layer',price:'Finder\'s fee per deal',duration:'Ongoing',
+   role:'People who know these projects better than anyone. Paid a documented finder\'s fee on contract value. Connector side only — never the decider.',
+   goal:'Identify 3 active referrers per target geography. Document each with a short referral agreement.',
+   targets:'Well-connected individuals in Jordan, Iraq, Syria, Kazakhstan, Uzbekistan.',
+   actions:'Map the referral network with Tamer. Draft a one-page referral agreement template. Target 5 signed referrers by month 3.'},
+];
+
+const TYPE_LABELS={journal:'Journal',memo:'Memo',lead:'Lead',blocker:'Blocker'};
+const BADGE_MAP={wedge:'badge-wedge',core:'badge-core',annuity:'badge-annuity',channel:'badge-channel',referral:'badge-referral'};
+
+let S={view:'overview',selCh:'diagnostic',entries:[],plans:{},editing:null,composing:false,composeType:'journal',composeText:'',filterCh:'all',filterType:'all'};
+
+function LS(k){try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}}
+function LSset(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function load(){S.entries=LS('tp_entries')||[];S.plans=LS('tp_plans')||{};render();}
+
+function fmtDate(ts){const d=new Date(ts);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
+function chEntries(id){return S.entries.filter(e=>e.ch===id);}
+function getCh(id){return CHANNELS.find(c=>c.id===id);}
+function uid(){return Date.now()+'_'+Math.random().toString(36).slice(2);}
+
+function showView(v,chId){
+  S.view=v;
+  if(chId){S.selCh=chId;}
+  S.composing=false;S.editing=null;
+  render();
+}
+
+function render(){
+  renderSidebar();
+  renderMobileNav();
+  if(S.view==='overview')renderOverview();
+  else if(S.view==='channel')renderChannel();
+  else if(S.view==='alljournal')renderAllJournal();
+}
+
+function renderSidebar(){
+  document.getElementById('nav-overview').className='nav-item'+(S.view==='overview'?' active':'');
+  document.getElementById('nav-alljournal').className='nav-item'+(S.view==='alljournal'?' active':'');
+  document.getElementById('sidebar-channels').innerHTML=CHANNELS.map(c=>{
+    const cnt=chEntries(c.id).length;
+    const active=S.view==='channel'&&S.selCh===c.id;
+    return `<button class="nav-ch${active?' active':''}" onclick="showView('channel','${c.id}')">
+      <span class="ch-dot" style="background:${c.color}"></span>
+      <span style="flex:1;text-align:left">${c.name}</span>
+      ${cnt>0?`<span class="nav-ch-badge-count" style="font-size:10px;background:rgba(0,0,0,.1);padding:1px 6px;border-radius:10px">${cnt}</span>`:''}
+    </button>`;
+  }).join('');
+}
+
+function renderMobileNav(){
+  document.getElementById('mobile-nav').innerHTML=`
+    <button class="mob-btn${S.view==='overview'?' active':''}" onclick="showView('overview')">Overview</button>
+    <button class="mob-btn${S.view==='alljournal'?' active':''}" onclick="showView('alljournal')">All entries</button>
+    ${CHANNELS.map(c=>`<button class="mob-btn${S.view==='channel'&&S.selCh===c.id?' active':''}" onclick="showView('channel','${c.id}')">${c.name}</button>`).join('')}`;
+}
+
+function renderOverview(){
+  document.getElementById('topbar-title').textContent='Overview';
+  document.getElementById('topbar-sub').textContent='Your channel command centre';
+  const total=S.entries.length;
+  const now=new Date();
+  const thisMonth=S.entries.filter(e=>{const d=new Date(e.ts);return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}).length;
+  const leads=S.entries.filter(e=>e.type==='lead').length;
+  const blockers=S.entries.filter(e=>e.type==='blocker').length;
+  const recent=[...S.entries].sort((a,b)=>b.ts-a.ts).slice(0,8);
+  const maxCnt=Math.max(1,...CHANNELS.map(c=>chEntries(c.id).length));
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-label">Total entries</div><div class="stat-value">${total}</div><div class="stat-sub">across all channels</div></div>
+      <div class="stat-card"><div class="stat-label">This month</div><div class="stat-value">${thisMonth}</div><div class="stat-sub">new entries</div></div>
+      <div class="stat-card"><div class="stat-label">Leads logged</div><div class="stat-value">${leads}</div><div class="stat-sub">active opportunities</div></div>
+      <div class="stat-card"><div class="stat-label">Blockers</div><div class="stat-value">${blockers}</div><div class="stat-sub">flagged</div></div>
+    </div>
+    <div class="section-head">Channels</div>
+    <div class="ch-overview-grid">
+      ${CHANNELS.map(c=>{const cnt=chEntries(c.id).length;return`<div class="ch-ov-card" onclick="showView('channel','${c.id}')">
+        <div class="ch-ov-num">${c.num}</div>
+        <div class="ch-ov-name">${c.name}</div>
+        <div class="ch-ov-count">${cnt} entr${cnt===1?'y':'ies'}</div>
+        <div class="ch-ov-bar"><div class="ch-ov-fill" style="width:${Math.round(cnt/maxCnt*100)}%;background:${c.color}"></div></div>
+      </div>`;}).join('')}
+    </div>
+    <div class="section-head">Recent entries</div>
+    <div class="recent-feed">
+      ${recent.length===0?`<div style="padding:2rem;text-align:center;color:var(--muted);font-size:13px">No entries yet — pick a channel and start logging.</div>`:
+        recent.map(e=>`<div class="feed-item">
+          <div class="feed-ch">${getCh(e.ch)?.name||e.ch}</div>
+          <div class="feed-body">${e.text.slice(0,110)}${e.text.length>110?'…':''}</div>
+          <div class="feed-date">${fmtDate(e.ts)}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderChannel(){
+  const ch=getCh(S.selCh);
+  document.getElementById('topbar-title').textContent=ch.name;
+  document.getElementById('topbar-sub').textContent=ch.price+' · '+ch.duration;
+  const plan=S.plans[S.selCh]||{};
+  const entries=chEntries(S.selCh).sort((a,b)=>b.ts-a.ts);
+
+  const planFields=[
+    {key:'goal',label:'6-month goal',def:ch.goal},
+    {key:'targets',label:'Target buyers',def:ch.targets},
+    {key:'actions',label:'Priority actions',def:ch.actions},
+    {key:'notes',label:'Notes',def:''},
+  ];
+
+  const planHtml=planFields.map(f=>{
+    const val=plan[f.key]!==undefined?plan[f.key]:f.def;
+    const editing=S.editing===S.selCh+':'+f.key;
+    return`<div class="plan-field">
+      <div class="plan-field-label">${f.label}</div>
+      ${editing?`<textarea class="plan-textarea" id="pf-${f.key}">${val}</textarea>
+        <div class="btn-row">
+          <button class="btn-sm primary" onclick="savePlan('${f.key}')">Save</button>
+          <button class="btn-sm" onclick="cancelEdit()">Cancel</button>
+        </div>`:
+        `<div class="plan-field-val${val?' filled':''}">${val||'<span style="opacity:.4;font-style:italic">Not set — click edit to add</span>'}</div>
+        <button class="edit-btn" onclick="editPlan('${f.key}')">✎ Edit</button>`}
+    </div>`;
+  }).join('<hr class="divider">');
+
+  const composeHtml=S.composing?`<div class="compose">
+    <div class="type-row">
+      ${Object.entries(TYPE_LABELS).map(([k,v])=>`<button class="type-pill${S.composeType===k?' active':''}" onclick="setType('${k}')">${v}</button>`).join('')}
+    </div>
+    <textarea class="compose-ta" id="compose-ta" placeholder="Write your entry...">${S.composeText}</textarea>
+    <div class="compose-footer">
+      <span class="compose-char" id="comp-char">${S.composeText.length} chars</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn-cancel" onclick="cancelCompose()">Cancel</button>
+        <button class="btn-log" onclick="logEntry()">Log entry</button>
+      </div>
+    </div>
+  </div>`:'';
+
+  const entriesHtml=entries.length===0?`<div class="empty"><p>No entries yet for this channel.<br>Log your first entry above.</p></div>`:
+    entries.map(e=>`<div class="entry-card">
+      <div class="entry-head">
+        <div class="entry-meta">
+          <span class="type-tag tag-${e.type}">${TYPE_LABELS[e.type]||e.type}</span>
+          <span class="entry-date">${fmtDate(e.ts)}</span>
+        </div>
+        <button class="del-btn" onclick="delEntry('${e.id}')" title="Delete">✕</button>
+      </div>
+      <div class="entry-body">${e.text}</div>
+    </div>`).join('');
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="ch-detail-header">
+      <div>
+        <div class="ch-detail-title">${ch.name}</div>
+        <div class="ch-detail-meta">${ch.price} · ${ch.duration}</div>
+      </div>
+      <span class="badge ${BADGE_MAP[ch.badge]}">${ch.badgeLabel}</span>
+    </div>
+
+    <div class="plan-card">
+      <div class="plan-card-title">📋 Channel plan</div>
+      <div class="plan-field">
+        <div class="plan-field-label">Role in the funnel</div>
+        <div class="plan-field-val filled">${ch.role}</div>
+      </div>
+      <hr class="divider">
+      ${planHtml}
+    </div>
+
+    <div class="journal-header">
+      <div class="journal-title-text">Journal <span style="color:var(--muted);font-weight:400;font-size:13px">${entries.length} entr${entries.length===1?'y':'ies'}</span></div>
+      ${!S.composing?`<button class="btn-new" onclick="openCompose()">+ New entry</button>`:''}
+    </div>
+    ${composeHtml}
+    <div class="entry-list">${entriesHtml}</div>`;
+
+  if(S.composing){setTimeout(()=>{const ta=document.getElementById('compose-ta');if(ta){ta.focus();ta.addEventListener('input',()=>{S.composeText=ta.value;const c=document.getElementById('comp-char');if(c)c.textContent=ta.value.length+' chars';});}},50);}
+  if(S.editing){setTimeout(()=>{const k=S.editing.split(':')[1];const el=document.getElementById('pf-'+k);if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);}},50);}
+}
+
+function renderAllJournal(){
+  document.getElementById('topbar-title').textContent='All entries';
+  document.getElementById('topbar-sub').textContent='Full log across every channel';
+  let filtered=S.entries;
+  if(S.filterCh!=='all')filtered=filtered.filter(e=>e.ch===S.filterCh);
+  if(S.filterType!=='all')filtered=filtered.filter(e=>e.type===S.filterType);
+  filtered=[...filtered].sort((a,b)=>b.ts-a.ts);
+
+  const chFilters=`<button class="filter-btn${S.filterCh==='all'?' active':''}" onclick="setFilter('ch','all')">All channels</button>`+
+    CHANNELS.map(c=>`<button class="filter-btn${S.filterCh===c.id?' active':''}" onclick="setFilter('ch','${c.id}')">${c.name}</button>`).join('');
+  const typeFilters=`<button class="filter-btn${S.filterType==='all'?' active':''}" onclick="setFilter('type','all')">All types</button>`+
+    Object.entries(TYPE_LABELS).map(([k,v])=>`<button class="filter-btn${S.filterType===k?' active':''}" onclick="setFilter('type','${k}')">${v}</button>`).join('');
+
+  const entriesHtml=filtered.length===0?`<div class="empty"><p>No entries match this filter.</p></div>`:
+    filtered.map(e=>`<div class="entry-card">
+      <div class="entry-head">
+        <div class="entry-meta">
+          <span class="type-tag tag-${e.type}">${TYPE_LABELS[e.type]||e.type}</span>
+          <span class="entry-ch-label">${getCh(e.ch)?.name||e.ch}</span>
+          <span class="entry-date">${fmtDate(e.ts)}</span>
+        </div>
+        <button class="del-btn" onclick="delEntry('${e.id}')" title="Delete">✕</button>
+      </div>
+      <div class="entry-body">${e.text}</div>
+    </div>`).join('');
+
+  document.getElementById('main-content').innerHTML=`
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">Filter by channel</div>
+      <div class="filter-row">${chFilters}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">Filter by type</div>
+      <div class="filter-row">${typeFilters}</div>
+    </div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px">${filtered.length} entr${filtered.length===1?'y':'ies'}</div>
+    <div class="entry-list">${entriesHtml}</div>`;
+}
+
+function editPlan(key){S.editing=S.selCh+':'+key;render();}
+function cancelEdit(){S.editing=null;render();}
+function savePlan(key){
+  const el=document.getElementById('pf-'+key);
+  if(!el)return;
+  if(!S.plans[S.selCh])S.plans[S.selCh]={};
+  S.plans[S.selCh][key]=el.value;
+  S.editing=null;
+  LSset('tp_plans',S.plans);
+  render();
+}
+function openCompose(){S.composing=true;S.composeText='';S.composeType='journal';render();}
+function cancelCompose(){S.composing=false;S.composeText='';render();}
+function setType(t){S.composeType=t;const ta=document.getElementById('compose-ta');if(ta)S.composeText=ta.value;render();setTimeout(()=>{const ta=document.getElementById('compose-ta');if(ta){ta.focus();ta.value=S.composeText;ta.setSelectionRange(ta.value.length,ta.value.length);}},30);}
+function logEntry(){
+  const ta=document.getElementById('compose-ta');
+  const text=(ta?ta.value:S.composeText).trim();
+  if(!text)return;
+  S.entries.push({id:uid(),ch:S.selCh,type:S.composeType,text,ts:Date.now()});
+  S.composing=false;S.composeText='';
+  LSset('tp_entries',S.entries);
+  render();
+}
+function delEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  S.entries=S.entries.filter(e=>e.id!==id);
+  LSset('tp_entries',S.entries);
+  render();
+}
+function setFilter(k,v){if(k==='ch')S.filterCh=v;else S.filterType=v;render();}
+
+load();
+</script>
+</body>
+</html>
