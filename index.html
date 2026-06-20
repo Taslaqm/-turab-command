@@ -216,6 +216,37 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webki
 .filter-btn:hover{border-color:var(--border2);color:var(--ink);}
 .filter-btn.active{background:var(--clay);border-color:var(--clay);color:#fff;}
 
+/* ── CRM ── */
+.crm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin-top:4px;}
+.crm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);padding:16px;transition:border-color .15s;cursor:pointer;}
+.crm-card:hover{border-color:var(--border2);}
+.crm-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;margin-bottom:10px;}
+.crm-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px;}
+.crm-company{font-size:12px;color:var(--ink3);margin-bottom:8px;}
+.crm-fields{display:flex;flex-direction:column;gap:4px;}
+.crm-field{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink2);}
+.crm-field-icon{width:14px;text-align:center;color:var(--ink3);flex-shrink:0;}
+.crm-ch-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.crm-ch-tag{font-size:10.5px;padding:2px 8px;border-radius:10px;background:var(--surface2);color:var(--ink3);}
+.crm-actions{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.crm-action-btn{background:none;border:1px solid var(--border2);border-radius:6px;padding:3px 9px;font-size:11px;color:var(--ink3);cursor:pointer;transition:all .15s;}
+.crm-action-btn:hover{background:var(--surface2);color:var(--ink);}
+.crm-action-btn.danger:hover{background:#3a0808;color:#e06060;border-color:#8a2020;}
+
+.contact-form{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:18px;margin-bottom:14px;}
+.cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+@media(max-width:500px){.cf-grid{grid-template-columns:1fr;}}
+.cf-field{display:flex;flex-direction:column;gap:4px;}
+.cf-label{font-size:10.5px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;font-weight:500;}
+.cf-input{background:var(--surface);border:1px solid var(--border2);border-radius:7px;padding:8px 11px;font-size:13px;color:var(--ink);font-family:'Inter',sans-serif;}
+.cf-input:focus{outline:none;border-color:var(--clay);}
+.cf-ch-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.cf-ch-pill{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--ink3);cursor:pointer;transition:all .15s;}
+.cf-ch-pill.active{background:var(--clay);border-color:var(--clay);color:#fff;}
+
+.crm-search{background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--ink);font-family:'Inter',sans-serif;width:100%;margin-bottom:14px;}
+.crm-search:focus{outline:none;border-color:var(--clay);}
+
 /* ── TOAST ── */
 .toast{position:fixed;bottom:20px;right:20px;background:var(--teal2);color:#fff;padding:10px 18px;border-radius:9px;font-size:13px;font-weight:500;z-index:999;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;}
 .toast.show{opacity:1;transform:translateY(0);}
@@ -232,6 +263,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webki
     <button class="tb-btn" id="nav-journal" onclick="go('journal')">Journal</button>
     <button class="tb-btn" id="nav-reminders" onclick="go('reminders')">Reminders</button>
     <button class="tb-btn" id="nav-email" onclick="go('email')">AI Email</button>
+    <button class="tb-btn" id="nav-crm" onclick="go('crm')">CRM</button>
   </div>
   <div class="tb-right">
     <div class="tb-reminder-badge" id="reminder-badge" onclick="go('reminders')">0 due</div>
@@ -247,6 +279,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webki
     <button class="sb-item" id="sb-journal" onclick="go('journal')">≡ All entries</button>
     <button class="sb-item" id="sb-reminders" onclick="go('reminders')">◷ Reminders</button>
     <button class="sb-item" id="sb-email" onclick="go('email')">✉ AI Email</button>
+    <button class="sb-item" id="sb-crm" onclick="go('crm')">◈ CRM</button>
     <div class="sb-section" style="margin-top:16px">Channels</div>
     <div id="sb-channels"></div>
   </aside>
@@ -314,11 +347,13 @@ let S={
   emailTo:'',emailContext:'',emailTone:'professional',emailType:'outreach',emailOutput:'',emailGenerating:false,
   rText:'',rDate:'',rCh:'all',rPriority:'med',
   addingReminder:false,
+  contacts:[],crmSearch:'',crmFilterCh:'all',addingContact:false,editingContact:null,
+  cfName:'',cfEmail:'',cfPhone:'',cfCompany:'',cfChannels:[],
 };
 
 function ls(k){try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}}
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-function load(){S.entries=ls('tp_entries')||[];S.plans=ls('tp_plans')||{};S.reminders=ls('tp_reminders')||[];render();}
+function load(){S.entries=ls('tp_entries')||[];S.plans=ls('tp_plans')||{};S.reminders=ls('tp_reminders')||[];S.contacts=ls('tp_contacts')||[];render();}
 
 function uid(){return Date.now()+'_'+Math.random().toString(36).slice(2);}
 function fmtDate(ts){const d=new Date(ts);return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
@@ -342,7 +377,8 @@ function render(){
   else if(S.view==='journal')m.innerHTML=renderJournal();
   else if(S.view==='reminders')m.innerHTML=renderReminders();
   else if(S.view==='email')m.innerHTML=renderEmail();
-  ['overview','channels','journal','reminders','email'].forEach(v=>{
+  else if(S.view==='crm')m.innerHTML=renderCRM();
+  ['overview','channels','journal','reminders','email','crm'].forEach(v=>{
     const b=document.getElementById('nav-'+v);
     const s=document.getElementById('sb-'+v);
     if(b)b.className='tb-btn'+(S.view===v?' active':'');
@@ -351,6 +387,7 @@ function render(){
   if(S.view==='channels')attachChannelEvents();
   if(S.view==='email')attachEmailEvents();
   if(S.view==='reminders')attachReminderEvents();
+  if(S.view==='crm')attachCRMEvents();
 }
 
 function renderBadge(){
@@ -807,6 +844,147 @@ function copyEmail(){
 function clearEmail(){S.emailOutput='';S.emailTo='';S.emailContext='';render();}
 
 load();
+
+/* ── CRM ── */
+function avatarColor(name){
+  const colors=[['#3a1808','#e07840'],['#083a20','#40c070'],['#08203a','#4090d0'],['#3a2a08','#d4a040'],['#2a083a','#c070e0'],['#083a38','#40c0b8']];
+  let h=0;for(let i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))&0xffff;
+  return colors[h%colors.length];
+}
+function initials(name){return name.split(' ').map(w=>w[0]||'').slice(0,2).join('').toUpperCase()||'?';}
+
+function renderCRM(){
+  const q=S.crmSearch.toLowerCase();
+  const contacts=[...S.contacts].filter(c=>!q||
+    c.name.toLowerCase().includes(q)||
+    (c.company||'').toLowerCase().includes(q)||
+    (c.email||'').toLowerCase().includes(q)
+  ).sort((a,b)=>a.name.localeCompare(b.name));
+
+  const chOptions=CHANNELS.map(c=>`<option value="${c.id}"${S.crmFilterCh===c.id?' selected':''}>${c.name}</option>`).join('');
+
+  const formHtml=S.addingContact||S.editingContact?`<div class="contact-form">
+    <div style="font-size:11px;color:var(--ink3);margin-bottom:12px;letter-spacing:.08em;text-transform:uppercase">${S.editingContact?'Edit contact':'New contact'}</div>
+    <div class="cf-grid">
+      <div class="cf-field"><div class="cf-label">Full name *</div><input class="cf-input" id="cf-name" placeholder="Ahmed Al-Rashid" value="${esc(S.cfName)}"></div>
+      <div class="cf-field"><div class="cf-label">Company / Organisation</div><input class="cf-input" id="cf-company" placeholder="Ministry of Economy" value="${esc(S.cfCompany)}"></div>
+      <div class="cf-field"><div class="cf-label">Email</div><input class="cf-input" id="cf-email" type="email" placeholder="ahmed@example.com" value="${esc(S.cfEmail)}"></div>
+      <div class="cf-field"><div class="cf-label">Phone</div><input class="cf-input" id="cf-phone" type="tel" placeholder="+962 7x xxx xxxx" value="${esc(S.cfPhone)}"></div>
+    </div>
+    <div style="font-size:10.5px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px">Channels</div>
+    <div class="cf-ch-row">
+      ${CHANNELS.map(c=>`<button class="cf-ch-pill${S.cfChannels.includes(c.id)?' active':''}" onclick="toggleCfCh('${c.id}')">${c.name}</button>`).join('')}
+    </div>
+    <div class="btn-row">
+      <button class="btn-log" onclick="saveContact()">${S.editingContact?'Save changes':'Add contact'}</button>
+      <button class="btn-cancel" onclick="cancelContact()">Cancel</button>
+    </div>
+  </div>`:'';
+
+  const cardsHtml=contacts.length===0?`<div class="empty"><p>${S.contacts.length===0?'No contacts yet — add your first one above.':'No contacts match your search.'}</p></div>`:
+    contacts.map(c=>{
+      const [bg,fg]=avatarColor(c.name);
+      const chs=c.channels||[];
+      return`<div class="crm-card">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <div class="crm-avatar" style="background:${bg};color:${fg}">${initials(c.name)}</div>
+          <div style="flex:1;min-width:0">
+            <div class="crm-name">${esc(c.name)}</div>
+            <div class="crm-company">${esc(c.company||'—')}</div>
+          </div>
+        </div>
+        <div class="crm-fields">
+          ${c.email?`<div class="crm-field"><span class="crm-field-icon">@</span><span>${esc(c.email)}</span></div>`:''}
+          ${c.phone?`<div class="crm-field"><span class="crm-field-icon">☎</span><span>${esc(c.phone)}</span></div>`:''}
+        </div>
+        ${chs.length>0?`<div class="crm-ch-tags">${chs.map(id=>{const ch=getCh(id);return ch?`<span class="crm-ch-tag" style="border-left:2px solid ${ch.color}">${ch.name}</span>`:''}).join('')}</div>`:''}
+        <div class="crm-actions">
+          <button class="crm-action-btn" onclick="editContact('${c.id}')">✎ Edit</button>
+          ${c.email?`<button class="crm-action-btn" onclick="emailContact('${c.id}')">✉ Email</button>`:''}
+          <button class="crm-action-btn danger" onclick="delContact('${c.id}')">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+
+  return`
+    <div class="page-head">
+      <div class="page-title">CRM <em>contacts</em></div>
+      <div class="page-sub">${S.contacts.length} contact${S.contacts.length!==1?'s':''} across your channels</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <input class="crm-search" id="crm-search" placeholder="Search by name, company, or email…" value="${esc(S.crmSearch)}" style="flex:1;min-width:200px;margin-bottom:0">
+      ${!S.addingContact&&!S.editingContact?`<button class="btn-new" onclick="openAddContact()">+ Add contact</button>`:''}
+    </div>
+    ${formHtml}
+    <div class="crm-grid">${cardsHtml}</div>`;
+}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function attachCRMEvents(){
+  setTimeout(()=>{
+    const s=document.getElementById('crm-search');
+    if(s){s.focus();s.addEventListener('input',()=>{S.crmSearch=s.value;render();});}
+    ['cf-name','cf-email','cf-phone','cf-company'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.addEventListener('input',()=>{
+        if(id==='cf-name')S.cfName=el.value;
+        if(id==='cf-email')S.cfEmail=el.value;
+        if(id==='cf-phone')S.cfPhone=el.value;
+        if(id==='cf-company')S.cfCompany=el.value;
+      });
+    });
+    const n=document.getElementById('cf-name');if(n&&(S.addingContact||S.editingContact))n.focus();
+  },50);
+}
+
+function openAddContact(){S.addingContact=true;S.editingContact=null;S.cfName='';S.cfEmail='';S.cfPhone='';S.cfCompany='';S.cfChannels=[];render();}
+function cancelContact(){S.addingContact=false;S.editingContact=null;render();}
+function toggleCfCh(id){S.cfChannels=S.cfChannels.includes(id)?S.cfChannels.filter(x=>x!==id):[...S.cfChannels,id];render();}
+
+function saveContact(){
+  const name=(document.getElementById('cf-name')?.value||S.cfName).trim();
+  if(!name){alert('Name is required');return;}
+  const email=(document.getElementById('cf-email')?.value||S.cfEmail).trim();
+  const phone=(document.getElementById('cf-phone')?.value||S.cfPhone).trim();
+  const company=(document.getElementById('cf-company')?.value||S.cfCompany).trim();
+  if(S.editingContact){
+    const c=S.contacts.find(c=>c.id===S.editingContact);
+    if(c){Object.assign(c,{name,email,phone,company,channels:S.cfChannels,updated:Date.now()});}
+    S.editingContact=null;
+  }else{
+    S.contacts.push({id:uid(),name,email,phone,company,channels:S.cfChannels,ts:Date.now()});
+    S.addingContact=false;
+  }
+  lsSet('tp_contacts',S.contacts);
+  showToast(S.editingContact?'Contact updated':'Contact added');
+  S.cfName='';S.cfEmail='';S.cfPhone='';S.cfCompany='';S.cfChannels=[];
+  render();
+}
+
+function editContact(id){
+  const c=S.contacts.find(c=>c.id===id);if(!c)return;
+  S.editingContact=id;S.addingContact=false;
+  S.cfName=c.name;S.cfEmail=c.email||'';S.cfPhone=c.phone||'';S.cfCompany=c.company||'';S.cfChannels=[...(c.channels||[])];
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function delContact(id){
+  if(!confirm('Delete this contact?'))return;
+  S.contacts=S.contacts.filter(c=>c.id!==id);
+  lsSet('tp_contacts',S.contacts);
+  showToast('Contact deleted');render();
+}
+
+function emailContact(id){
+  const c=S.contacts.find(c=>c.id===id);if(!c)return;
+  S.emailTo=c.name+(c.company?' — '+c.company:'');
+  const chs=(c.channels||[]).map(id=>getCh(id)?.name).filter(Boolean).join(', ');
+  S.emailContext=chs?'Contact is associated with: '+chs+'. ':'';
+  go('email');
+}
+
 </script>
 </body>
 </html>
